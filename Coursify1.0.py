@@ -31,23 +31,29 @@ base_de_conhecimento = {
         "Área de estudo": "Engenharia de software",
         "Habilidades específicas": "Desenvolvimento de software"
     },
+    "Práticas de engenharia de software": {
+        "Nível de dificuldade": "Alto",
+        "Pré-requisitos": ["Engenharia de software"],
+        "Área de estudo": "Engenharia de software",
+        "Habilidades específicas": "Desenvolvimento de software"
+    },
     "Matemática": {
         "Nível de dificuldade": "Baixo",
         "Pré-requisitos": ["Nenhum"],
         "Área de estudo": "Matemática",
-        "Habilidades específicas": "Cálculo"
+        "Habilidades específicas": "Desenvolvimento de software"
     },
     "Cálculo": {
         "Nível de dificuldade": "Alta",
         "Pré-requisitos": ["Matemática"],
         "Área de estudo": "Matemática",
-        "Habilidades específicas": "Cálculo"
+        "Habilidades específicas": "Desenvolvimento de software"
     },
     "Álgebra linear": {
         "Nível de dificuldade": "Alta",
         "Pré-requisitos": ["Matemática"],
         "Área de estudo": "Matemática",
-        "Habilidades específicas": "Cálculo"
+        "Habilidades específicas": "Desenvolvimento de software"
     },
     "Sistemas operacionais": {
         "Nível de dificuldade": "Baixo",
@@ -112,6 +118,7 @@ base_de_conhecimento = {
 }
 
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import ttk
 
 def remover_cadeiras_cursadas(cadeiras_filtradas, cadeiras_cursadas, nenhuma_cursada):
@@ -137,22 +144,25 @@ def filtrar_cadeiras(niveis, areas, habilidades):
 
     return cadeiras_filtradas
 
-def exibir_cadeiras_filtradas():
-    niveis = []
-    if var_baixo.get():
-        niveis.append("Baixo")
-    if var_medio.get():
-        niveis.append("Médio")
-    if var_alto.get():
-        niveis.append("Alta")
+# def exibir_cadeiras_filtradas():
+#     niveis = []
+#     if var_baixo.get():
+#         niveis.append("Baixo")
+#     if var_medio.get():
+#         niveis.append("Médio")
+#     if var_alto.get():
+#         niveis.append("Alta")
 
-    cadeiras_cursadas = [cadeira for cadeira, var in cadeiras_cursadas_vars.items() if var.get()]
-    cadeiras_filtradas = filtrar_cadeiras(niveis)
-    cadeiras_filtradas = remover_cadeiras_cursadas(cadeiras_filtradas, cadeiras_cursadas, var_nenhuma_cursada.get())
+#     cadeiras_cursadas = [cadeira for cadeira, var in cadeiras_cursadas_vars.items() if var.get()]
+#     cadeiras_filtradas = filtrar_cadeiras(niveis)
+#     cadeiras_filtradas = remover_cadeiras_cursadas(cadeiras_filtradas, cadeiras_cursadas, var_nenhuma_cursada.get())
 
-    lista_cadeiras.delete(0, tk.END)
-    for cadeira in cadeiras_filtradas:
-        lista_cadeiras.insert(tk.END, cadeira)
+#     lista_cadeiras.delete(0, tk.END)
+#     for cadeira in cadeiras_filtradas:
+#         lista_cadeiras.insert(tk.END, cadeira)
+#         lista_cadeiras.delete(0, tk.END)
+
+    
 
 def exibir_cadeiras_filtradas():
     niveis = []
@@ -187,8 +197,6 @@ def exibir_cadeiras_filtradas():
     else:
         if var_desenvolvimento.get():
             habilidades.append("Desenvolvimento de software")
-        if var_calculo.get():
-            habilidades.append("Cálculo")
         if var_banco_de_dados.get():
             habilidades.append("Banco de dados")
         if var_sistemas.get():
@@ -198,9 +206,38 @@ def exibir_cadeiras_filtradas():
     cadeiras_filtradas = filtrar_cadeiras(niveis, areas, habilidades)
     cadeiras_filtradas = remover_cadeiras_cursadas(cadeiras_filtradas, cadeiras_cursadas, var_nenhuma_cursada.get())
 
+    lista_cadeiras.delete(0, tk.END)        
+    if len(cadeiras_filtradas) == 0:
+        messagebox.showinfo("Resultado", "Não há cadeiras que preencham estes requisitos")
+    else:
+        for cadeira in cadeiras_filtradas:
+            lista_cadeiras.insert(tk.END, cadeira)
+
+def reset_filters():
+    for var in cadeiras_cursadas_vars.values():
+        var.set(False)
+    var_nenhuma_cursada.set(True)
+
+    var_todos_niveis.set(True)
+    var_baixo.set(False)
+    var_medio.set(False)
+    var_alto.set(False)
+
+    var_areas_opcional.set(True)
+    var_programacao.set(False)
+    var_matematica.set(False)
+    var_inteligencia.set(False)
+    var_engenharia.set(False)
+    var_gerenciamento.set(False)
+    var_visualizacao.set(False)
+    var_computabilidade.set(False)
+
+    var_habilidades_opcional.set(True)
+    var_desenvolvimento.set(False)
+    var_banco_de_dados.set(False)
+    var_sistemas.set(False)
+
     lista_cadeiras.delete(0, tk.END)
-    for cadeira in cadeiras_filtradas:
-        lista_cadeiras.insert(tk.END, cadeira)
 
 def atualizar_nenhuma_cursada():
     if any(var.get() for var in cadeiras_cursadas_vars.values()):
@@ -217,7 +254,7 @@ def desmarcar_todos_niveis():
     atualizar_todos_niveis()
 
 def atualizar_todas_habilidades():
-    if not (var_desenvolvimento.get() or var_calculo.get() or var_banco_de_dados.get() or var_sistemas.get()):
+    if not (var_desenvolvimento.get() or var_banco_de_dados.get() or var_sistemas.get()):
         var_habilidades_opcional.set(True)
 
 def desmarcar_todas_habilidades():
@@ -318,7 +355,7 @@ frame_habilidades = tk.Frame(root)
 tk.Label(frame_habilidades, text="Habilidades")
 
 var_habilidades_opcional = tk.BooleanVar(value=True)
-label_habilidades_title = tk.Label(root, text="Habilidades específicas:")
+label_habilidades_title = tk.Label(root, text="Objetivo de carreira:")
 label_habilidades_title.pack(pady=(10, 0))
 check_habilidades_opcional = tk.Checkbutton(frame_habilidades, text="Todas", variable=var_habilidades_opcional)
 check_habilidades_opcional.pack(side=tk.LEFT)
@@ -326,10 +363,6 @@ check_habilidades_opcional.pack(side=tk.LEFT)
 var_desenvolvimento = tk.BooleanVar()
 check_desenvolvimento = tk.Checkbutton(frame_habilidades, text="Desenvolvimento de software", variable=var_desenvolvimento, command=desmarcar_todas_habilidades)
 check_desenvolvimento.pack(side=tk.LEFT)
-
-var_calculo = tk.BooleanVar()
-check_calculo = tk.Checkbutton(frame_habilidades, text="Cálculo", variable=var_calculo, command=desmarcar_todas_habilidades)
-check_calculo.pack(side=tk.LEFT)
 
 var_banco_de_dados = tk.BooleanVar()
 check_var_banco_de_dados = tk.Checkbutton(frame_habilidades, text="Banco de dados", variable=var_banco_de_dados, command=desmarcar_todas_habilidades)
@@ -343,6 +376,9 @@ frame_habilidades.pack(pady=10)
 
 btn_filtrar = tk.Button(root, text="Filtrar Cadeiras", command=exibir_cadeiras_filtradas)
 btn_filtrar.pack(pady=10)
+
+btn_reset = tk.Button(root, text="Reset", command=reset_filters)
+btn_reset.pack(pady=10)
 
 lista_cadeiras = tk.Listbox(root, width=50, height=20)
 lista_cadeiras.pack(pady=10)
