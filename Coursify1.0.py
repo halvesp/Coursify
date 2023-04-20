@@ -117,54 +117,56 @@ base_de_conhecimento = {
     },
 }
 
+# Importa o módulo tkinter e o renomeia como "tk"
 import tkinter as tk
+# Importa o módulo messagebox do tkinter para exibir caixas de mensagem
 from tkinter import messagebox
+# Importa o módulo ttk do tkinter para utilizar temas e estilos de widget
 from tkinter import ttk
 
+# Função para remover cadeiras já cursadas da lista de cadeiras filtradas
 def remover_cadeiras_cursadas(cadeiras_filtradas, cadeiras_cursadas, nenhuma_cursada):
+    # Inicializa a lista de cadeiras recomendadas
     cadeiras_recomendadas = []
+    # Itera sobre as cadeiras filtradas
     for cadeira in cadeiras_filtradas:
+        # Verifica se a cadeira não foi cursada
         if cadeira not in cadeiras_cursadas:
+            # Obtém os pré-requisitos da cadeira
             pre_requisitos = base_de_conhecimento[cadeira]["Pré-requisitos"]
+             # Verifica se nenhuma cadeira foi cursada
             if nenhuma_cursada:
+                # Adiciona a cadeira à lista de recomendadas se não há pré-requisitos
                 if "Nenhum" in pre_requisitos:
                     cadeiras_recomendadas.append(cadeira)
             else:
+                # Adiciona a cadeira à lista de recomendadas se os pré-requisitos forem atendidos
                 if any(pre_requisito in cadeiras_cursadas for pre_requisito in pre_requisitos) or "Nenhum" in pre_requisitos:
                     cadeiras_recomendadas.append(cadeira)
+    # Retorna a lista de cadeiras recomendadas
     return cadeiras_recomendadas
 
+
+# Função para filtrar cadeiras com base nos níveis de dificuldade, áreas de estudo e habilidades específicas
 def filtrar_cadeiras(niveis, areas, habilidades):
+    # Inicializa a lista de cadeiras filtradas
     cadeiras_filtradas = []
 
+    # Itera sobre todas as cadeiras no banco de conhecimento
     for cadeira in base_de_conhecimento:
+        # Verifica se o nível de dificuldade da cadeira está nos níveis selecionados
         if base_de_conhecimento[cadeira]["Nível de dificuldade"] in niveis:
+             # Verifica se a área de estudo e as habilidades específicas da cadeira estão nas áreas e habilidades selecionadas, ou se essas opções não foram selecionadas
             if (not areas or base_de_conhecimento[cadeira]["Área de estudo"] in areas) and (not habilidades or base_de_conhecimento[cadeira]["Habilidades específicas"] in habilidades):
+                # Adiciona a cadeira à lista de cadeiras filtradas
                 cadeiras_filtradas.append(cadeira)
 
+    # Retorna a lista de cadeiras filtradas
     return cadeiras_filtradas
 
-# def exibir_cadeiras_filtradas():
-#     niveis = []
-#     if var_baixo.get():
-#         niveis.append("Baixo")
-#     if var_medio.get():
-#         niveis.append("Médio")
-#     if var_alto.get():
-#         niveis.append("Alta")
-
-#     cadeiras_cursadas = [cadeira for cadeira, var in cadeiras_cursadas_vars.items() if var.get()]
-#     cadeiras_filtradas = filtrar_cadeiras(niveis)
-#     cadeiras_filtradas = remover_cadeiras_cursadas(cadeiras_filtradas, cadeiras_cursadas, var_nenhuma_cursada.get())
-
-#     lista_cadeiras.delete(0, tk.END)
-#     for cadeira in cadeiras_filtradas:
-#         lista_cadeiras.insert(tk.END, cadeira)
-#         lista_cadeiras.delete(0, tk.END)
-
-    
-
+# Função para exibir a lista de cadeiras filtradas no widget da lista de cadeiras
 def exibir_cadeiras_filtradas():
+     # Inicializa as listas de níveis, áreas e habilidades com base nas opções selecionadas
     niveis = []
     if var_todos_niveis.get():
         niveis = ["Baixo", "Médio", "Alta"]
@@ -202,8 +204,11 @@ def exibir_cadeiras_filtradas():
         if var_sistemas.get():
             habilidades.append("Sistemas")
     
+    # Cria a lista de cadeiras cursadas com base nas opções selecionadas
     cadeiras_cursadas = [cadeira for cadeira, var in cadeiras_cursadas_vars.items() if var.get()]
+    # Filtra as cadeiras com base nos níveis, áreas e habilidades
     cadeiras_filtradas = filtrar_cadeiras(niveis, areas, habilidades)
+    # Remove as cadeiras já cursadas da lista de cadeiras filtradas
     cadeiras_filtradas = remover_cadeiras_cursadas(cadeiras_filtradas, cadeiras_cursadas, var_nenhuma_cursada.get())
 
     lista_cadeiras.delete(0, tk.END)        
@@ -213,7 +218,9 @@ def exibir_cadeiras_filtradas():
         for cadeira in cadeiras_filtradas:
             lista_cadeiras.insert(tk.END, cadeira)
 
+# Função para redefinir todos os filtros e a lista de cadeiras exibida
 def reset_filters():
+    # Redefine todas as opções selecionadas
     for var in cadeiras_cursadas_vars.values():
         var.set(False)
     var_nenhuma_cursada.set(True)
@@ -237,34 +244,42 @@ def reset_filters():
     var_banco_de_dados.set(False)
     var_sistemas.set(False)
 
+    # Limpa a lista de cadeiras exibida no widget
     lista_cadeiras.delete(0, tk.END)
 
+# Funções para atualizar as opções selecionadas com base nas ações do usuário
 def atualizar_nenhuma_cursada():
     if any(var.get() for var in cadeiras_cursadas_vars.values()):
         var_nenhuma_cursada.set(False)
     else:
         var_nenhuma_cursada.set(True)
 
+# Função para atualizar a opção "Todos os níveis" com base nas opções selecionadas
 def atualizar_todos_niveis():
     if not (var_baixo.get() or var_medio.get() or var_alto.get()):
         var_todos_niveis.set(True)
 
+# Função para desmarcar a opção "Todos os níveis" e verificar se é necessário reativá-la
 def desmarcar_todos_niveis():
     var_todos_niveis.set(False)
     atualizar_todos_niveis()
 
+# Função para atualizar a opção "Todas as habilidades" com base nas opções selecionadas
 def atualizar_todas_habilidades():
     if not (var_desenvolvimento.get() or var_banco_de_dados.get() or var_sistemas.get()):
         var_habilidades_opcional.set(True)
 
+# Função para desmarcar a opção "Todas as habilidades" e verificar se é necessário reativá-la
 def desmarcar_todas_habilidades():
     var_habilidades_opcional.set(False)
     atualizar_todas_habilidades()
 
+# Função para atualizar a opção "Todas as áreas" com base nas opções selecionadas
 def atualizar_todas_areas():
     if not (var_programacao.get() or var_matematica.get() or var_inteligencia.get() or var_engenharia.get() or var_gerenciamento.get() or var_visualizacao.get() or var_computabilidade.get()):
         var_areas_opcional.set(True)
 
+# Função para desmarcar a opção "Todas as áreas" e verificar se é necessário reativá-la
 def desmarcar_todas_areas():
     var_areas_opcional.set(False)
     atualizar_todas_areas()
@@ -272,7 +287,6 @@ def desmarcar_todas_areas():
 
 root = tk.Tk()
 root.title("Sistema Especialista")
-
 
 cadeiras_cursadas_vars = {cadeira: tk.BooleanVar() for cadeira in base_de_conhecimento}
 
